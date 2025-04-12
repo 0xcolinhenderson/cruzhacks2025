@@ -6,16 +6,16 @@ STTandWS: Converts speech to text and sends transcript to websocket as json in r
 
 Basic Structure:
 
-STTandWS/
-├── speech-to-text-app/
-│   ├── src/
-│   │   ├── App.css
-│   │   └── App.js
-│   ├── package.json
-│   └── (other folders...)
-└── testServer/
-    ├── package.json
-    └── server.js
+STTandWS/  
+├── speech-to-text-app/  
+│   ├── src/  
+│   │   ├── App.css  
+│   │   └── App.js  
+│   ├── package.json  
+│   └── (other folders...)  
+└── testServer/  
+    ├── package.json  
+    └── server.js  
 
 
 Navigating App.js:
