@@ -1,0 +1,72 @@
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(22, 22, 22, 0.8);
+  padding: 7px 20px;
+  border-radius: 70px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.navList {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navLink {
+  display: inline-block;
+  padding: 5px 10px;
+  font-family: var(--font-inter);
+  font-weight: 200;
+  text-decoration: none;
+  color: #f6f6f6;
+  transition: all 0.3s;
+}
+
+.navLink:hover {
+  color: #ffffff;
+  transform: scale(1.05);
+  transition: all 0.3s;
+}
+
+.mainNavLink {
+  display: inline-block;
+  padding: 10px 20px;
+  font-family: var(--font-inter);
+  font-weight: 500;
+  text-decoration: none;
+  color: #222222;
+  background-color: #f6f6f6;
+  box-shadow: 0 0px 4px rgba(255, 255, 255, 0.63);
+  border-radius: 20px;
+  transition: all 0.3s;
+  white-space: nowrap;
+  background-size: 200%;
+}
+
+.mainNavLink:hover {
+  background: linear-gradient(45deg, #0d5179, #0f8dd1, #17a374, #0f595e);
+  box-shadow: 0 0px 10px rgba(15, 141, 209, 0.63);
+  background-size: 400% 400%;
+  animation: gradientLoop 10s infinite;
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+@keyframes gradientLoop {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

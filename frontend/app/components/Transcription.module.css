@@ -1,0 +1,60 @@
+.transcriptionContainer {
+  width: 600px;
+  height: 400px;
+  background-color: #f6f6f6;
+  border-radius: 10px;
+  border: 1px solid #83838359;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: 10px;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: rgb(0, 0, 0, 0.85);
+}
+
+.divider {
+  width: 400px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(207, 207, 207, 1),
+    rgba(207, 207, 207, 0)
+  );
+  margin-bottom: 10px;
+}
+
+.textArea {
+  width: 100%;
+  height: calc(100% - 80px);
+  background-color: #e0e0e0;
+  border: 1px solid #83838359;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  color: #000000d0;
+  resize: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cccccc #f9f9f9;
+}
+
+.textArea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.textArea::-webkit-scrollbar-thumb {
+  background-color: #cccccc;
+  border-radius: 4px;
+}
+
+.textArea::-webkit-scrollbar-track {
+  background-color: #f9f9f9;
+}
