@@ -1,9 +1,3 @@
-# cruzhacks2025
-cruzhacks 2025
-
-
-STTandWS: Converts speech to text and sends transcript to websocket as json in real time
-
 Basic Structure:
 
 STTandWS folder
@@ -33,4 +27,3 @@ Testing:
  4) Check bottom left corner, should say Connected with green light
  5) Click record and talk into mic, terminal window with testServer will show sent text chunks
  6) Click Stop button to stop recording any time
-
