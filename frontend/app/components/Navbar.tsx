@@ -6,13 +6,14 @@ interface Route {
   name: string;
   path: string;
   isMain?: boolean;
+  icon?: string;
 }
 
 interface NavbarProps {
   routes: Route[];
 }
 
-const Navbar: React.FC<NavbarProps> = ({ routes }) => {
+export default function Navbar({ routes }: NavbarProps) {
   return (
     <nav className={styles.navbar}>
       <ul className={styles.navList}>
@@ -26,6 +27,13 @@ const Navbar: React.FC<NavbarProps> = ({ routes }) => {
                   : styles.navLink
               }
             >
+              {route.icon && (
+                <img
+                  src={route.icon}
+                  alt={`${route.name} icon`}
+                  className={styles.navIcon}
+                />
+              )}
               {route.name}
             </Link>
           </li>
@@ -33,6 +41,4 @@ const Navbar: React.FC<NavbarProps> = ({ routes }) => {
       </ul>
     </nav>
   );
-};
-
-export default Navbar;
+}

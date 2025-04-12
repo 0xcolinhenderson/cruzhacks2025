@@ -1,22 +1,33 @@
 .transcriptionContainer {
-  width: 600px;
-  height: 400px;
-  background-color: #f6f6f6;
+  width: 400;
+  min-height: 80vh;
+  background-color: #191919ea;
   border-radius: 10px;
-  border: 1px solid #83838359;
+  border: 1px solid #bfbfbf42;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-inline: 10px;
+  padding: 10px;
   overflow: hidden;
+  display: flex;
 }
 
 .title {
   font-size: 24px;
   font-weight: 500;
+  color: #f9f9f9;
+}
+
+.titleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
   margin-bottom: 10px;
-  color: rgb(0, 0, 0, 0.85);
+  border-radius: 10px;
+  border: 1px solid #bfbfbf23;
+  background-color: rgb(35, 35, 35);
+  min-height: 65px;
 }
 
 .divider {
@@ -24,30 +35,73 @@
   height: 1px;
   background: linear-gradient(
     to right,
-    rgba(207, 207, 207, 1),
+    rgb(77, 81, 78),
     rgba(207, 207, 207, 0)
   );
   margin-bottom: 10px;
 }
 
-.textArea {
-  width: 100%;
-  height: calc(100% - 80px);
-  background-color: #e0e0e0;
-  border: 1px solid #83838359;
-  border-radius: 4px;
-  padding: 10px;
-  font-size: 16px;
-  font-family: "Inter", sans-serif;
-  color: #000000d0;
-  resize: none;
+.textContainer {
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #cccccc #f9f9f9;
+  max-height: 70vh;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-.textArea::-webkit-scrollbar {
+.textContainer::-webkit-scrollbar {
   width: 8px;
+}
+
+.textArea {
+  color: #efefef;
+  background-color: rgb(35, 35, 35);
+  border: 1px solid #b4b4b439;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 18px;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  overflow: hidden;
+  width: auto;
+  field-sizing: content;
+  line-height: 1.3;
+  scrollbar-width: none;
+  resize: none;
+  user-select: none;
+}
+
+.message {
+  margin-bottom: 10px;
+  display: block;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.word {
+  display: inline-block;
+  opacity: 0;
+  animation: fadeInWord 0.3s ease-in forwards;
+}
+z .finalizedWord {
+  animation: fadeToWhite 0.5s ease-in forwards;
+}
+
+.interimWord {
+  color: #b2b2b2;
+}
+
+.messageData {
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  padding-top: 5px;
+  padding-left: 5px;
+  color: #b2b2b2;
 }
 
 .textArea::-webkit-scrollbar-thumb {
@@ -57,4 +111,37 @@
 
 .textArea::-webkit-scrollbar-track {
   background-color: #f9f9f9;
+}
+
+.clickableMessage {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickableMessage:hover {
+  transform: scale(1.02);
+}
+
+.clickableMessage:active {
+  transform: scale(0.98);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInWord {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

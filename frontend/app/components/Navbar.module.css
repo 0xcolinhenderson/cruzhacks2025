@@ -17,6 +17,7 @@
   margin: 0;
   padding: 0;
   align-items: center;
+  white-space: nowrap;
 }
 
 .navLink {
@@ -29,6 +30,14 @@
   transition: all 0.3s;
 }
 
+.navIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+  transform: translateY(-2px);
+}
+
 .navLink:hover {
   color: #ffffff;
   transform: scale(1.05);
@@ -39,7 +48,7 @@
   display: inline-block;
   padding: 10px 20px;
   font-family: var(--font-inter);
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   color: #222222;
   background-color: #f6f6f6;

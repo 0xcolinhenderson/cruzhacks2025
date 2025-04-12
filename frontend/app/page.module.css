@@ -15,15 +15,16 @@
 }
 
 .main {
-  padding: 0 20px;
-  max-width: 1200px;
-  margin: 100px auto;
-}
-
-.transcriptionContainer {
   display: flex;
   gap: 20px;
   justify-content: center;
   align-items: flex-start;
   margin-top: 50px;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: row;
+  margin-top: 50px;
+  gap: 10px;
 }
