@@ -2,12 +2,50 @@ import spacy
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 
+#%pip install -qU langchain_community wikipedia
+from langchain_community.retrievers import WikipediaRetriever
+
+
 MAX_CONTEXT_LENGTH = 20
 OLLAMA_MODEL = "llama3.2"
 DEBUG=True
 
 model = OllamaLLM(model=OLLAMA_MODEL)
+retriever = WikipediaRetriever()
+
 nlp = spacy.load("en_core_web_sm")
+
+classification_template = ChatPromptTemplate.from_template("""
+You are an expert in evaluating whether a claim is "Factual" or "Opinion".
+
+Context: {context}
+Claim: "{claim}"
+
+Classification Rules:
+- "Factual" means the claim can be **objectively proven true or false** using well-established knowledge, authoritative sources (e.g., dictionaries, science, encyclopedias), or common facts.
+- "Opinion" means the claim **cannot be definitively proven or disproven**, and reflects personal judgment, belief, value, or emotion.
+- "Statement" if it makes no claim whatsoever (does not fall into above categories).
+
+**Important Clarifications:**
+- Do NOT overanalyze simple claims.
+- If something is **clearly wrong but verifiable** (like "Blue is not a color"), classify it as **"Factual"** — because the statement **can be disproven** using widely accepted sources.
+- Ignore philosophical relativism, cultural edge cases, or linguistic ambiguity. Assume normal, modern English usage.
+
+Your job is not to evaluate **truth**, only whether something is **verifiable** or **subjective**.
+
+Respond with ONLY: "Factual", "Opinion", or "Statement" (no explanation, no quotes).
+""")
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+chain = classification_template | model
+chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | classification_template
+    | model
+    | StrOutputParser()
+)
 
 context = []
 
@@ -19,6 +57,7 @@ def classify_claim_as_factual_or_opinion(claim):
     classification_template = ChatPromptTemplate.from_template("""
     You are an expert in evaluating whether a claim is "Factual" or "Opinion".
 
+    Context: {context}
     Claim: "{claim}"
 
     Classification Rules:
@@ -41,7 +80,7 @@ def classify_claim_as_factual_or_opinion(claim):
 
 def is_potential_claim(sentence):
     doc = nlp(sentence)
-    
+
     debug(f"\nDEBUGGING CLAIM: '{sentence}'")
     tokens="Tokens & POS:", [(t.text, t.pos_, t.dep_) for t in doc]
     debug(tokens)
@@ -77,7 +116,7 @@ def is_potential_claim(sentence):
     if any(tok.text.lower() in personal_pronouns for tok in doc):
         debug("Personal Pronoun!")
         return False
-    
+
 
     return True
 
@@ -93,8 +132,8 @@ def handle_text(text, context):
         debug(f"Found claim in [ {text} ]")
         debug("")
 
-        classification = classify_claim_as_factual_or_opinion(text)
-        debug(classification)      
+        classification = chain.invoke(text)
+        debug(classification)
         debug("-----------------------------------------------------------")
 
         classification = classification.lower().replace(".", "")
@@ -111,7 +150,6 @@ def handle_text(text, context):
         print(f"statement detected: '{text}'")
         debug(f"No claim found in [ {text} ], adding to context")
 
-if __name__ == '__main__': 
-    test = "Water of blue."
+if __name__ == '__main__':
+    test = "Dog is cow"
     print(is_potential_claim(test))
-
