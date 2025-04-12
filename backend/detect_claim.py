@@ -1,6 +1,9 @@
 import spacy
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
 #%pip install -qU langchain_community wikipedia
 from langchain_community.retrievers import WikipediaRetriever
@@ -16,67 +19,76 @@ retriever = WikipediaRetriever()
 nlp = spacy.load("en_core_web_sm")
 
 classification_template = ChatPromptTemplate.from_template("""
-You are an expert in evaluating whether a claim is "Factual" or "Opinion".
+**Task:** Classify the input claim.
+**Output:** Respond with ONLY one word: "Factual", "Opinion", or "Statement".
 
-Context: {context}
-Claim: "{claim}"
+**Definitions & Rules:**
+*   **Factual:** Can be proven true or false with objective evidence (facts, sources).
+    *   *Important:* Your job is NOT to check if it's *true*, only if it *can* be checked. Even a false claim like "Blue is not a color" is **Factual**.
+*   **Opinion:** Expresses personal belief, feeling, judgment, or preference. Cannot be objectively proven true or false.
+*   **Statement:** Makes no clear claim to be verified or judged (often incomplete or just descriptive).
 
-Classification Rules:
-- "Factual" means the claim can be **objectively proven true or false** using well-established knowledge, authoritative sources (e.g., dictionaries, science, encyclopedias), or common facts.
-- "Opinion" means the claim **cannot be definitively proven or disproven**, and reflects personal judgment, belief, value, or emotion.
-- "Statement" if it makes no claim whatsoever (does not fall into above categories).
+**Instructions:**
+1.  Use simple, standard English understanding.
+2.  Do not overthink.
+3.  Output *only* the classification word. No explanation.
 
-**Important Clarifications:**
-- Do NOT overanalyze simple claims.
-- If something is **clearly wrong but verifiable** (like "Blue is not a color"), classify it as **"Factual"** — because the statement **can be disproven** using widely accepted sources.
-- Ignore philosophical relativism, cultural edge cases, or linguistic ambiguity. Assume normal, modern English usage.
+**Examples:**
+Claim: "Apples are nice" -> Opinion
+Claim: "Red is a color" -> Factual
+Claim: "Dog bark" -> Statement
 
-Your job is not to evaluate **truth**, only whether something is **verifiable** or **subjective**.
+**Claim to Classify:**
+"{claim}"
+""")
 
-Respond with ONLY: "Factual", "Opinion", or "Statement" (no explanation, no quotes).
+wikipedia_template = ChatPromptTemplate.from_template("""
+**Task:** Evaluate the Claim based *only* on the Evidence.
+**Output:** Respond with *exactly* one word: "True", "False", or "Unsure".
+
+**Definitions:**
+*   **True:** Evidence clearly supports the Claim.
+*   **False:** Evidence clearly contradicts the Claim.
+*   **Unsure:** Evidence doesn't clearly support or contradict.
+
+**Instructions:**
+*   Use *only* the Evidence below.
+*   Do not overanalyze.
+*   No explanation, no quotes in the output.
+
+**Evidence:**
+--- BEGIN EVIDENCE ---
+{context}
+--- END EVIDENCE ---
+
+**Claim:** "{claim}"
+
+**Output (ONLY one word):**
 """)
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-chain = classification_template | model
-chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+initial_chain = (
+    {"claim": RunnablePassthrough()}
     | classification_template
     | model
     | StrOutputParser()
 )
+
+rag_chain = (
+    {"context": retriever | format_docs, "claim": RunnablePassthrough()}
+    | wikipedia_template
+    | model
+    | StrOutputParser()
+)
+
 
 context = []
 
 def debug(text):
     if DEBUG:
         print(text)
-
-def classify_claim_as_factual_or_opinion(claim):
-    classification_template = ChatPromptTemplate.from_template("""
-    You are an expert in evaluating whether a claim is "Factual" or "Opinion".
-
-    Context: {context}
-    Claim: "{claim}"
-
-    Classification Rules:
-    - "Factual" means the claim can be **objectively proven true or false** using well-established knowledge, authoritative sources (e.g., dictionaries, science, encyclopedias), or common facts.
-    - "Opinion" means the claim **cannot be definitively proven or disproven**, and reflects personal judgment, belief, value, or emotion.
-    - "Statement" if it makes no claim whatsoever (does not fall into above categories).
-
-    **Important Clarifications:**
-    - Do NOT overanalyze simple claims.
-    - If something is **clearly wrong but verifiable** (like "Blue is not a color"), classify it as **"Factual"** — because the statement **can be disproven** using widely accepted sources.
-    - Ignore philosophical relativism, cultural edge cases, or linguistic ambiguity. Assume normal, modern English usage.
-
-    Your job is not to evaluate **truth**, only whether something is **verifiable** or **subjective**.
-
-    Respond with ONLY: "Factual", "Opinion", or "Statement" (no explanation, no quotes).
-    """)
-    chain = classification_template | model
-    result = chain.invoke({"claim": claim}).strip()
-    return result
 
 def is_potential_claim(sentence):
     doc = nlp(sentence)
@@ -132,13 +144,15 @@ def handle_text(text, context):
         debug(f"Found claim in [ {text} ]")
         debug("")
 
-        classification = chain.invoke(text)
+        classification = initial_chain.invoke(text)
         debug(classification)
         debug("-----------------------------------------------------------")
 
         classification = classification.lower().replace(".", "")
         if classification == "factual":
             print(f"claim detected '{text}'")
+
+            print(rag_chain.invoke(text))
         elif classification == "opinion":
             print(f"opinion detected: '{text}'")
         elif classification == "statement":
@@ -151,5 +165,7 @@ def handle_text(text, context):
         debug(f"No claim found in [ {text} ], adding to context")
 
 if __name__ == '__main__':
-    test = "Dog is cow"
+    test = input("type somethin in: ")
     print(is_potential_claim(test))
+
+    handle_text(test,[])
