@@ -6,16 +6,17 @@ STTandWS: Converts speech to text and sends transcript to websocket as json in r
 
 Basic Structure:
 
-STTandWS folder
-`--speech-to-text-app folder
-  `--src
-    `--App.css
-    `--App.js
-  `--package.json
-  `--Other folders
-`--testServer folder
-  `--package.json
-  `--server.js
+STTandWS/  
+├── speech-to-text-app/  
+│   ├── src/  
+│   │   ├── App.css  
+│   │   └── App.js  
+│   ├── package.json  
+│   └── (other folders...)  
+└── testServer/  
+    ├── package.json  
+    └── server.js  
+
 
 Navigating App.js:
 - Contains comments for various code chunks that you can copy
