@@ -19,9 +19,20 @@ function isQuestionSentence(sentence: string): boolean {
   const words = sentence.trim().split(/\s+/);
   const firstWord = words[0]?.toLowerCase() || "";
   const startIndicators = [
-    "is", "are", "am", "was", "were",
-    "do", "does", "did", "can", "could",
-    "would", "should", "will", "shall"
+    "is",
+    "are",
+    "am",
+    "was",
+    "were",
+    "do",
+    "does",
+    "did",
+    "can",
+    "could",
+    "would",
+    "should",
+    "will",
+    "shall",
   ];
   const generalIndicators = ["what", "why", "how", "when", "where", "who"];
   return (
@@ -50,6 +61,10 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isStarted, setIsStarted] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
+  const [loadingSentences, setLoadingSentences] = useState<Set<number>>(
+    new Set()
+  );
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const addSentence = (sentence: string) => {
@@ -78,8 +93,33 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
     setTimeout(() => setIsCooldown(false), 1000);
   };
 
-  const handleSentenceClick = (sentence: string) => {
-    addFactCheck(sentence);
+  const handleSentenceClick = async (sentence: string, index: number) => {
+    setLoadingSentences((prev) => new Set(prev).add(index));
+
+    try {
+      const response = await fetch("http://localhost:5000/detect_claim", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sentence: sentence }),
+      });
+      if (!response.ok) {
+        console.error("Failed to process sentence:", response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      addFactCheck(sentence);
+    } catch (error) {
+      console.error("Error processing sentence:", error);
+    } finally {
+      setLoadingSentences((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
+    }
   };
 
   useEffect(() => {
@@ -147,8 +187,10 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
         {sentences.map((sentence, index) => (
           <span
             key={index}
-            className={styles.sentence}
-            onClick={() => handleSentenceClick(sentence)}
+            className={`${styles.sentence} ${
+              loadingSentences.has(index) ? styles.loading : ""
+            }`}
+            onClick={() => handleSentenceClick(sentence, index)}
           >
             {sentence}{" "}
           </span>
