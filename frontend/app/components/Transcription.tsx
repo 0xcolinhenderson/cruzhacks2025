@@ -78,11 +78,14 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
     if (isCooldown) return;
 
     if (isStarted) {
+      // add box with timestamp "Recording started h:mm:ss AM/PM"
       recognition?.stop();
       setIsStarted(!isStarted);
     } else {
       try {
         setInterimTranscript("");
+
+        // add box with timestamp "Recording started h:mm:ss AM/PM"
         recognition?.start();
         setIsStarted(!isStarted);
       } catch (error) {
