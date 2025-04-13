@@ -4,7 +4,8 @@ import { Gradient } from "whatamesh";
 import { useEffect } from "react";
 import styles from "../page.module.css";
 import Navbar from "../components/Navbar";
-export default function BlankPage() {
+
+export default function AboutPage() {
   useEffect(() => {
     const gradient = new Gradient();
     gradient.initGradient("#gradient-canvas");
@@ -27,47 +28,54 @@ export default function BlankPage() {
       <Navbar routes={routes} />
       <main className={styles.main}>
         <div className={styles.contentContainer}>
-          <div className={styles.titleContainer}>
-            <h1 className={styles.title}>
-              Realtime Conversational Fact-Checking
-            </h1>
-            <h2 className={styles.subtitle}>
-              Generate realtime analysis & transcription of conversations, to
-              combat misinformation. Created for UCSC CruzHacks 2025.
-            </h2>
+          {/* Header */}
+          <div className={styles.header}>
+            <h1 className={styles.title}>About</h1>
+          </div>
+          {/* Tiled content */}
+          <div className={styles.tiles}>
+            <div className={styles.tile}>
+              <h2>Inspiration</h2>
+              <p>
+                With the increase in reliance on the Internet, there has also been an alarming increase in the spread of misinformation. We were inspired to build our project because we noticed how much misinformation has entered our daily lives in things like social media, news articles, and sometimes even informational websites. Our goal is help everyone figure out for themselves what the truth is.
+              </p>
+            </div>
+            <div className={styles.tile}>
+              <h2>What it does</h2>
+              <p>
+                Our tool helps users reveal the truth in their conversations. It records and transcribes speech in real time. Any sentence can be clicked and automatically fact-checked against multiple reputable sources, all of which are conveniently linked in a quick AI report for transparency.
+              </p>
+            </div>
+            <div className={styles.tile}>
+              <h2>How we built it</h2>
+              <p>
+                Our project is built off of Next.js infrastructure alongside a Flask RESTful API server. Our backend utilizes a queue system to handle requests, which query Gemini API alongside a local retriever model using Langchain & Ollama libraries. We source our information through Wikipedia’s API, as it gives easily obtainable sourcing and straight-to-the-point information.
+              </p>
+            </div>
+            <div className={styles.tile}>
+              <h2>Built With</h2>
+              <ul>
+                <li>Flask</li>
+                <li>Google Gemini API</li>
+                <li>Langchain</li>
+                <li>Next.js</li>
+                <li>Ollama</li>
+                <li>Python</li>
+                <li>React</li>
+                <li>Typescript</li>
+                <li>Web Speech API</li>
+                <li>Wikipedia API</li>
+              </ul>
+            </div>
+            {/* Created By tile that spans two columns */}
+            <div className={`${styles.tile} ${styles.tileCreatedBy}`}>
+              <p>
+                Created by: Ayush Bandopadhyay, Colin Henderson, Preston Clayton
+              </p>
+            </div>
           </div>
         </div>
       </main>
-      <div className={styles.mainContent}>
-        <div className={styles.feature}>
-          <img src="/analysis.JPG" alt="Analysis" />
-          <h3 className={styles.featureTitle}>
-            Realtime Conversational Analysis
-          </h3>
-          <p>
-            Analyze conversations in real-time to detect misinformation and
-            ensure factual accuracy.
-          </p>
-        </div>
-        <div className={styles.feature}>
-          <img src="/stt.JPG" alt="STT" />
-          <h3 className={styles.featureTitle}>Speech-to-Text</h3>
-          <p>
-            Convert spoken words into text dynamically with advanced speech
-            recognition.
-          </p>
-        </div>
-        <div className={styles.feature}>
-          <img src="/other.JPG" alt="Verify Claims" />
-          <h3 className={styles.featureTitle}>
-            Realtime Conversational Analysis
-          </h3>
-          <p>
-            Verify claims using AI-powered tools and trusted sources. All 
-            sources are linked for transparency.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
