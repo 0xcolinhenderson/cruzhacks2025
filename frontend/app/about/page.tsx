@@ -27,12 +27,10 @@ export default function AboutPage() {
       <canvas id="gradient-canvas" className={styles.canvas}></canvas>
       <Navbar routes={routes} />
       <main className={styles.main}>
-        <div className={styles.contentContainer}>
-          {/* Header */}
+        <div className={`${styles.contentContainer} ${styles.horizontalSlide}`}>
           <div className={styles.header}>
             <h1 className={styles.title}>About</h1>
           </div>
-          {/* Tiled content */}
           <div className={styles.tiles}>
             <div className={styles.tile}>
               <h2>Inspiration</h2>
@@ -67,7 +65,6 @@ export default function AboutPage() {
                 <li>Wikipedia API</li>
               </ul>
             </div>
-            {/* Created By tile that spans two columns */}
             <div className={`${styles.tile} ${styles.tileCreatedBy}`}>
               <p>
                 Created by: Ayush Bandopadhyay, Colin Henderson, Preston Clayton

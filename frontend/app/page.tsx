@@ -32,7 +32,7 @@ export default function BlankPage() {
               Realtime Conversational Fact-Checking
             </h1>
             <h2 className={styles.subtitle}>
-              Generate realtime analysis & transcription of conversations, to
+              Generate realtime analysis & transcription of conversations to
               combat misinformation. Created for UCSC CruzHacks 2025.
             </h2>
           </div>
@@ -63,8 +63,7 @@ export default function BlankPage() {
             Realtime Conversational Analysis
           </h3>
           <p>
-            Verify claims using AI-powered tools and trusted sources. All
-            analysis of claims provde sourcing to allow for transparency.
+            Verify claims using AI-powered tools and trusted sources. Sources are linked for transparency.
           </p>
         </div>
       </div>
