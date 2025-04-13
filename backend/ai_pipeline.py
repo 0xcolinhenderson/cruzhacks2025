@@ -67,12 +67,7 @@ def is_verifiable_claim_gemini(client, claim):
     **Instructions:**
     1.  Use simple, standard English understanding.
     2.  Do not overthink.
-    3.  Output *only* the classification word. No explanation.
-
-    **Examples:**
-    Claim: "Apples are nice" -> Opinion
-    Claim: "Red is a color" -> Factual
-    Claim: "Dog bark" -> Statement
+    3.  Output *only* the classification word followed by a newline, and searches wrapped in square braces also separated by newlines. No explanation.
 
     **Claim to Classify:**
     "{claim}"
@@ -204,22 +199,21 @@ def parse_final_output(output: str, sources) -> str:
 
     return json.dumps(result)
 
-def main():
+def verify_claim(my_claim):
     if os.path.exists("./wiki_langchain_db"):
         shutil.rmtree("./wiki_langchain_db")
         print("Removing old database...")
-        time.sleep(5)
+        # time.sleep(3)
     else:
         print("No old database found.")
-        time.sleep(5)
+        # time.sleep(3)
 
-
-    my_claim = "dogs are larger than cats on average"
     res = is_verifiable_claim_gemini(client=client, claim=my_claim)
     classification, searches = extract_data(res)
     if classification == "Factual":
         print("Classification:", classification)
         print("Searches:", searches)
+        print(res)
     else:
         print("Classification:", classification)
         return
@@ -242,17 +236,17 @@ def main():
     template = """
     You are a fact-checking assistant.
 
-    Use ONLY the following Wikipedia context to verify the claim.
+    Use ONLY the following Wikipedia sources to verify the claim.
     Respond with:
     - Verdict: [True / False / Unverifiable]
-    - Reasoning: [Why the claim is or is not supported. Include a relevant quote from the context.]
+    - Reasoning: [Why the claim is or is not supported. Include a relevant quote from the sources. 1-2 sentences max.]
 
     If the context does not contain enough information to verify the claim, respond with "Unverifiable".
 
     Claim:
     {claim}
 
-    Context:
+    Sources:
     {context}
     """
     prompt = ChatPromptTemplate.from_template(template)
@@ -264,4 +258,5 @@ def main():
     # todo: json
     # json claim:string, verdict:bool, reasoning:string (preferably with quote, cited from sources), sources:[string of wiki articles]
 
-main()
+if __name__ == "__main__":
+    verify_claim("joe biden is a woman")

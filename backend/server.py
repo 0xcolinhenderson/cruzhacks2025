@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from detect_claim import is_potential_claim
 import threading
 import uuid
 import time
 from queue import Queue
+from ai_pipeline import verify_claim
 
 app = Flask(__name__)
 
@@ -16,16 +18,12 @@ state = {
     "failed": False
 }
 
-def fakeahh_task(input_data):
-    time.sleep(5)
-    return f"{input_data} is done now or somethn;lsakh"
-
 def worker():
     while True:
         task_id, input_data = task_queue.get()
         task_status[task_id] = {"status": "running", "result": None}
         try:
-            result = fakeahh_task(input_data)
+            result = verify_claim(input_data)
             task_status[task_id] = {"status": "done", "result": result}
         except Exception as e:
             task_status[task_id] = {"status": "error", "result": str(e)}
@@ -40,12 +38,13 @@ def queue_claim():
     if not claim or claim == "":
         return jsonify({"error": "No sentence provided"}), 400
 
+    if not is_potential_claim(claim):
+        return jsonify({"result": "not claim"})
+
     task_id = str(uuid.uuid4())
     task_status[task_id] = {"status": "pending", "result": None}
-    # TODO logic should branch off here to handle nlp base case
-    #
     task_queue.put((task_id, claim))
-    return jsonify({"task_id": task_id})
+    return jsonify({"result": task_id})
 
 @app.route('/poll/<task_id>', methods=['GET'])
 def poll(task_id):
