@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Button from "./Button";
 import styles from "./Transcription.module.css";
+import { start } from "repl";
 
 let recognition: SpeechRecognition | null = null;
 
@@ -16,105 +17,53 @@ if (typeof window !== "undefined") {
 }
 
 function isQuestionSentence(sentence: string): boolean {
-  sentence = sentence.trim();
-  if (sentence.length === 0) return false;
-
-  const words = sentence.split(/\s+/);
-  const firstWord = words[0].toLowerCase();
-
-  const startOnlyIndicators = [
-    "is",
-    "are",
-    "am",
-    "was",
-    "were",
-    "do",
-    "does",
-    "did",
-    "can",
-    "could",
-    "would",
-    "should",
-    "will",
-    "shall",
+  const words = sentence.trim().split(/\s+/);
+  const firstWord = words[0]?.toLowerCase() || "";
+  const secondWord = words[1]?.toLowerCase() || "";
+  const startIndicators = [
+    "is", "are", "am", "was", "were",
+    "do", "does", "did", "can", "could",
+    "would", "should", "will", "shall"
   ];
   const generalIndicators = ["what", "why", "how", "when", "where", "who"];
-
-  if (
-    startOnlyIndicators.includes(firstWord) ||
-    generalIndicators.includes(firstWord)
-  ) {
-    return true;
-  }
-
-  if (words.length >= 4) {
-    const secondWord = words[1].toLowerCase();
-    if (startOnlyIndicators.includes(secondWord)) {
-      return true;
-    }
-  }
-
-  for (let word of words.slice(1)) {
-    if (generalIndicators.includes(word.toLowerCase())) {
-      return true;
-    }
-  }
-
-  return false;
+  return (
+    startIndicators.includes(firstWord) || startIndicators.includes(secondWord) ||
+    words.some((w) => generalIndicators.includes(w.toLowerCase()))
+  );
 }
 
 function formatSentence(sentence: string): string {
   sentence = sentence.trim();
-  if (sentence.length === 0) return "";
-
+  if (!sentence) return "";
   const isQuestion = isQuestionSentence(sentence);
-
   sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
-
   if (!/[.?]$/.test(sentence)) {
     sentence += isQuestion ? "?" : ".";
   }
-
   return sentence;
 }
 
-interface TextareaData {
-  text: string[];
-  timestamp: string;
-}
-
-interface TranscriptionProps {
-  textStream: string;
-}
-
-export default function Transcription({ textStream }: TranscriptionProps) {
-  const [textareas, setTextareas] = useState<TextareaData[]>([]);
-  const [isStarted, setIsStarted] = useState(false);
+export default function Transcription() {
+  const [sentences, setSentences] = useState<string[]>([]);
   const [interimTranscript, setInterimTranscript] = useState("");
+  const [isStarted, setIsStarted] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
-
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const addTextarea = (sentence: string) => {
-    const formattedSentence = formatSentence(sentence);
-    const currentTime = new Date().toLocaleTimeString();
-    const words = formattedSentence.split(" ");
-    setTextareas((prev) => [...prev, { text: words, timestamp: currentTime }]);
-  };
-
-  const handleTranscriptClick = (index: number, textarea: TextareaData) => {
-    console.log(`Transcript box ${index} clicked!`, textarea);
+  const addSentence = (sentence: string) => {
+    const formatted = formatSentence(sentence);
+    if (formatted) {
+      setSentences((prev) => [...prev, formatted]);
+    }
   };
 
   const toggleStart = () => {
     if (isCooldown) return;
 
     if (isStarted) {
-      console.log("Stopping speech recognition...");
-      recognition.stop();
+      recognition?.stop();
       setIsStarted(false);
     } else {
-      console.log("Starting speech recognition...");
       try {
         recognition.start();
         setIsStarted(true);
@@ -124,12 +73,12 @@ export default function Transcription({ textStream }: TranscriptionProps) {
     }
 
     setIsCooldown(true);
-    setTimeout(() => {
-      setIsCooldown(false);
-    }, 1000);
+    setTimeout(() => setIsCooldown(false), 1000);
   };
 
   useEffect(() => {
+    if (!recognition) return;
+
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let final = "";
       let interim = "";
@@ -143,93 +92,60 @@ export default function Transcription({ textStream }: TranscriptionProps) {
         }
       }
 
-      if (final) {
-        addTextarea(final.trim());
+      if (final.trim()) {
+        addSentence(final.trim());
       }
 
       setInterimTranscript(interim);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      if (event.error === "no-speech") {
-        console.warn("No speech detected, continuing to listen...");
-      } else {
+      if (event.error !== "no-speech") {
         console.error("Speech recognition error:", event.error);
       }
     };
 
     recognition.onend = () => {
-      console.log("Recognition ended.");
       if (isStarted) {
-        console.log("Restarting recognition...");
-        recognition.start();
+        recognition?.start();
       }
     };
 
     return () => {
-      recognition.stop();
+      recognition?.stop();
     };
-  }, []);
+  }, [isStarted]);
 
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [textareas]);
+  }, [sentences, interimTranscript]);
 
   return (
     <div className={styles.transcriptionContainer}>
       <div className={styles.titleContainer}>
         <h2 className={styles.title}>Transcription</h2>
-        <div className={styles.buttonGroup}>
-          <Button
-            label={isStarted ? "Stop" : "Start"}
-            onClick={toggleStart}
-            variant={isStarted ? "stop" : "start"}
-          />
-        </div>
+        <Button
+          label={isStarted ? "Stop" : "Start"}
+          onClick={toggleStart}
+          variant={isStarted ? "stop" : "start"}
+        />
       </div>
       <div className={styles.divider}></div>
-      <div
-        className={styles.textContainer}
-        id="textarea-container"
-        ref={containerRef}
-      >
-        {textareas.map((textarea, index) => (
-          <div
+
+      <div className={styles.paragraphContainer} ref={containerRef}>
+        {sentences.map((sentence, index) => (
+          <span
             key={index}
-            className={`${styles.message} ${styles.clickableMessage}`}
-            onClick={() => handleTranscriptClick(index, textarea)}
+            className={styles.sentence}
+            onClick={() => console.log("Clicked:", sentence)}
           >
-            <div className={styles.textArea}>
-              {textarea.text.map((word, wordIndex) => (
-                <span
-                  key={wordIndex}
-                  className={styles.word}
-                  style={{
-                    animationDelay: `${wordIndex * 0.1}s`,
-                  }}
-                >
-                  {word}&nbsp;
-                </span>
-              ))}
-            </div>
-            <p className={styles.messageData}>{textarea.timestamp}</p>
-          </div>
+            {sentence}{" "}
+          </span>
         ))}
         {interimTranscript && (
-          <div className={styles.message}>
-            <div className={styles.textArea}>
-              <span
-                className={styles.word}
-                style={{
-                  color: "#b2b2b2",
-                }}
-              >
-                {interimTranscript}
-              </span>
-            </div>
-          </div>
+          <span className={styles.interim}>{interimTranscript}</span>
         )}
       </div>
     </div>

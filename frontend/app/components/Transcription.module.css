@@ -1,9 +1,8 @@
 .transcriptionContainer {
   width: 400;
-  min-height: 80vh;
+  height: 80vh;
   background-color: #191919ea;
   border-radius: 10px;
-  border: 1px solid #bfbfbf42;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -12,9 +11,40 @@
   display: flex;
 }
 
+/* New sentences rather than message boxes which highlight when hovered */
+.sentence {
+  cursor: pointer;
+  padding: 1px 2px 1px 2px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: inline;
+}
+
+.sentence:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #00aaff;
+}
+
+/* new paragraph are which gives the look of a continuous stream of text */
+.paragraphContainer {
+  flex-grow: 1;
+  overflow-y: auto;
+  font-size: 1.4rem;
+  font-weight: bold;
+  line-height: 1.6;
+  color: #f0f0f0;
+  padding: 10px;
+}
+
+.interim {
+  opacity: 0.5;
+  color: #ccc;
+}
+
+
 .title {
   font-size: 24px;
-  font-weight: 500;
+  font-weight: bold;
   color: #f9f9f9;
 }
 
@@ -25,13 +55,11 @@
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
-  border: 1px solid #bfbfbf23;
-  background-color: rgb(35, 35, 35);
   min-height: 65px;
 }
 
 .divider {
-  width: 400px;
+  width: 100%;
   height: 1px;
   background: linear-gradient(
     to right,
