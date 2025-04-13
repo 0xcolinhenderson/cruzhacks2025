@@ -1,37 +1,71 @@
-# cruzhacks2025
-cruzhacks 2025
+# Verity - Realtime Fact-Checking & Conversational Analysis
+
+Verity is a powerful web application designed to streamline the job application process. Verity combats misinformation through realtime retreival of sourced data, which is analyzed and applied to specific claims made during a conversation. The platform encourages research and sourcing claims, improving conversation productiveness and establishing baseline truths to arguments.
+
+With Verity, users can get a realtime transcription of their conversation, analyze specific claims made, and get personalized feedback regardinging the validity of claims.
 
 
-STTandWS: Converts speech to text and sends transcript to websocket as json in real time
+## 📸 Screenshots
 
-Basic Structure:
+![Homepage](public/screenshots/homepage.png)
+_Home Page_
 
-STTandWS/  
-├── speech-to-text-app/  
-│   ├── src/  
-│   │   ├── App.css  
-│   │   └── App.js  
-│   ├── package.json  
-│   └── (other folders...)  
-└── testServer/  
-    ├── package.json  
-    └── server.js  
+![Analysis](public/screenshots/analysis.png)
+_Interface for live conversational analysis_
 
 
-Navigating App.js:
-- Contains comments for various code chunks that you can copy
-Things you should copy (Until Lines 222):
-- code for handling text chunks and inserting Punctuation and Capitilization (Lines 5 - 60)
-- code for web text to speech API (Lines 62 - 85 for setup,functionality Lines 137-158)
-- code for error handlong web socket, establishing web socket, and sending json to web socket (87-134)
-- smooth auto scroll code (185 - 192)
-- code for toggling record and stop (looks better than two seperate buttons, prevents people clicking record while its recording as well) (212 - 221)
+## 🚀 Getting Started
 
-Testing:
- 1) Open speech-to-text-app directory and run 'npm start'
- 2) Open testServer directory and run 'npm start'
- 3) Open chrome and navigate to http://localhost:3000/
- 4) Check bottom left corner, should say Connected with green light
- 5) Click record and talk into mic, terminal window with testServer will show sent text chunks
- 6) Click Stop button to stop recording any time
+### Prerequisites
 
+- Node.js (v15.1.5 or higher)
+- npm or yarn
+- Python 3.7
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/yourusername/speedfill.git
+   cd cruzhacks2025
+   cd frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Create a [\\.env\\.local](.env.local) file in the root directory and add your API keys:
+
+   ```
+   GEMINI_API_KEY = "YOUR KEY"
+   GOOGLESEARCH_API_KEY = "YOUR KEY"
+   ```
+
+4. Run the development server:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+## 🛠️ Technology Stack
+
+- **Frontend:** React.js, Next.js
+- **AI Integration:** Google Gemini AI API, Ollama+Langchain Retreiver Models (nomic-embed-text)
+- **Backend API** Flask
+- **Languages** Python, TypeScript, HTML/CSS
+
+
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [`LICENSE`](LICENSE) file for details.
