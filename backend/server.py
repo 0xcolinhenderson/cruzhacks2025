@@ -42,9 +42,9 @@ def queue_claim():
 
     task_id = str(uuid.uuid4())
     task_status[task_id] = {"status": "pending", "result": None}
-    task_queue.put((task_id, claim))
     # TODO logic should branch off here to handle nlp base case
     #
+    task_queue.put((task_id, claim))
     return jsonify({"task_id": task_id})
 
 @app.route('/poll/<task_id>', methods=['GET'])
