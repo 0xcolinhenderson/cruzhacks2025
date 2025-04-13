@@ -22,6 +22,7 @@ export default function BlankPage() {
   ];
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   const addFactCheck = ({
     claim,
     isFact,
@@ -41,6 +42,8 @@ export default function BlankPage() {
     ]);
   };
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
   return (
