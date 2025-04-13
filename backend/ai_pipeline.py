@@ -13,6 +13,38 @@ from vector import retriever
 import shutil
 import time
 
+import json
+import re
+from typing import Optional
+
+def parse_fact_check_output(output: str) -> str:
+    # Extract the verdict
+    verdict_match = re.search(r"Verdict:\s*(True|False|Unverifiable)", output, re.IGNORECASE)
+    verdict_str = verdict_match.group(1).strip().lower() if verdict_match else None
+    if verdict_str == "true":
+        verdict: Optional[bool] = True
+    elif verdict_str == "false":
+        verdict = False
+    else:
+        verdict = None
+
+    # Extract the reasoning
+    reasoning_match = re.search(r"Reasoning:\s*(.*?)(?:\n\s*Sources:|\Z)", output, re.DOTALL | re.IGNORECASE)
+    reasoning = reasoning_match.group(1).strip() if reasoning_match else ""
+
+    # Extract the sources
+    sources_match = re.search(r"Sources:\s*(.*)", output, re.DOTALL | re.IGNORECASE)
+    sources = sources_match.group(1).strip() if sources_match else ""
+
+    result = {
+        "verdict": verdict,
+        "reasoning": reasoning,
+        "sources": sources
+    }
+
+    return json.dumps(result, indent=4)
+
+
 GEMINI_API_KEY = "AIzaSyD1z08FY3VRI9Sp3xpicZWrjsOOsqmjwyQ"
 GOOGLESEARCH_API_KEY = "AIzaSyDGHwkC1EhnbNz_9niOg2UZWyWslkz6I3A"
 
@@ -58,13 +90,13 @@ def is_verifiable_claim_gemini(client, claim):
 def extract_data(response):
     lines = response.strip().split("\n")
     classification = lines[0].strip()
-    
+
     searches = []
     for line in lines[1:]:
         if line.startswith("[") and line.endswith("]"):
             search = line[1:-1] + " wikipedia"
             searches.append(search)
-    
+
     return classification, searches
 
 
@@ -149,6 +181,29 @@ def split_into_chunks(content, chunk_size=500, chunk_overlap=50):
     )
     return text_splitter.split_text(content)
 
+def parse_final_output(output: str, sources) -> str:
+    # verdict
+    verdict_match = re.search(r"Verdict:\s*(True|False|Unverifiable)", output, re.IGNORECASE)
+    verdict_str = verdict_match.group(1).strip().lower() if verdict_match else None
+    if verdict_str == "true":
+        verdict: Optional[bool] = True
+    elif verdict_str == "false":
+        verdict = False
+    else:
+        verdict = None
+
+    # reasoning
+    reasoning_match = re.search(r"Reasoning:\s*(.*?)(?:\n\s*Sources:|\Z)", output, re.DOTALL | re.IGNORECASE)
+    reasoning = reasoning_match.group(1).strip() if reasoning_match else ""
+
+    result = {
+        "verdict": verdict,
+        "reasoning": reasoning,
+        "sources": sources
+    }
+
+    return json.dumps(result)
+
 def main():
     if os.path.exists("./wiki_langchain_db"):
         shutil.rmtree("./wiki_langchain_db")
@@ -159,16 +214,16 @@ def main():
         time.sleep(5)
 
 
-    my_claim = "All dogs are blue."
+    my_claim = "dogs are larger than cats on average"
     res = is_verifiable_claim_gemini(client=client, claim=my_claim)
     classification, searches = extract_data(res)
     if classification == "Factual":
         print("Classification:", classification)
         print("Searches:", searches)
-    else:   
+    else:
         print("Classification:", classification)
         return
-    
+
     search_urls = search_google(searches)
     print("Search URLs:")
     for url in search_urls:
@@ -176,9 +231,12 @@ def main():
 
     wikidata = get_wikipedia_articles(search_urls)
 
-    save_wikipedia_to_csv([(doc.metadata["title"], doc.page_content) for doc in wikidata])
+    # save_wikipedia_to_csv([(doc.metadata["title"], doc.page_content) for doc in wikidata])
 
-    context = retriever(my_claim, documents=wikidata)
+    context, sources = retriever(my_claim, documents=wikidata)
+    print("context      context")
+    print(context)
+    print("endcontext      context")
 
     model = OllamaLLM(model="llama3.2")
     template = """
@@ -188,7 +246,6 @@ def main():
     Respond with:
     - Verdict: [True / False / Unverifiable]
     - Reasoning: [Why the claim is or is not supported. Include a relevant quote from the context.]
-    - Sources: [Wikipedia article titles used]
 
     If the context does not contain enough information to verify the claim, respond with "Unverifiable".
 
@@ -202,9 +259,9 @@ def main():
     chain = prompt | model
     claim_verification = chain.invoke({"context": context, "claim": my_claim})
     print("\nClaim Verification Result:")
-    print(claim_verification)
+    print(parse_final_output(claim_verification, sources))
 
     # todo: json
     # json claim:string, verdict:bool, reasoning:string (preferably with quote, cited from sources), sources:[string of wiki articles]
-    
+
 main()
