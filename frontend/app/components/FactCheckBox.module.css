@@ -1,6 +1,6 @@
 .factCheckBoxContainer {
   width: 800px;
-  min-height: 600px;
+  height: 75vh;
   background-color: #191919ea;
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
