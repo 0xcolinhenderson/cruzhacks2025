@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import styles from "./FactCheckBox.module.css";
 import styles2 from "./Transcription.module.css";
 
-interface TextareaData {
+interface FactCheckData {
   claim: string;
   isFact: boolean;
   description: string;
@@ -12,48 +12,17 @@ interface TextareaData {
 }
 
 interface FactCheckProps {
-  textStream: string;
+  factChecks: FactCheckData[];
 }
 
-export default function FactCheckBox({ textStream }: FactCheckProps) {
-  const [factChecks, setFactChecks] = useState<TextareaData[]>([]);
+export default function FactCheckBox({ factChecks }: FactCheckProps) {
   const [isAutoMode, setIsAutoMode] = useState(false);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const addFactCheck = () => {
-    const currentTime = new Date().toLocaleTimeString();
-    const claim = textStream;
-    const isFact = Math.random() > 0.5;
-    const description = isFact
-      ? "This claim is supported by evidence."
-      : "This claim is not supported by evidence.";
-    const sources = isFact
-      ? ["Source 1", "Source 2", "Source 3"]
-      : ["No reliable sources found."];
-
-    setFactChecks((prev) => [
-      ...prev,
-      { claim, isFact, description, sources, timestamp: currentTime },
-    ]);
-  };
-
   const handleToggleMode = () => {
     setIsAutoMode((prev) => !prev);
-
-    if (!isAutoMode) {
-      if (!intervalRef.current) {
-        intervalRef.current = setInterval(() => {
-          addFactCheck();
-        }, 3000);
-      }
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
+    // Auto mode functionality could be moved to the parent component if needed
   };
 
   useEffect(() => {

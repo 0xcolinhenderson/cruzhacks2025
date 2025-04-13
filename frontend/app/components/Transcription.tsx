@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Button from "./Button";
 import styles from "./Transcription.module.css";
-import { start } from "repl";
 
 let recognition: SpeechRecognition | null = null;
 
@@ -19,7 +18,6 @@ if (typeof window !== "undefined") {
 function isQuestionSentence(sentence: string): boolean {
   const words = sentence.trim().split(/\s+/);
   const firstWord = words[0]?.toLowerCase() || "";
-  const secondWord = words[1]?.toLowerCase() || "";
   const startIndicators = [
     "is", "are", "am", "was", "were",
     "do", "does", "did", "can", "could",
@@ -27,7 +25,7 @@ function isQuestionSentence(sentence: string): boolean {
   ];
   const generalIndicators = ["what", "why", "how", "when", "where", "who"];
   return (
-    startIndicators.includes(firstWord) || startIndicators.includes(secondWord) ||
+    startIndicators.includes(firstWord) ||
     words.some((w) => generalIndicators.includes(w.toLowerCase()))
   );
 }
@@ -43,7 +41,11 @@ function formatSentence(sentence: string): string {
   return sentence;
 }
 
-export default function Transcription() {
+interface TranscriptionProps {
+  addFactCheck: (claim: string) => void;
+}
+
+export default function Transcription({ addFactCheck }: TranscriptionProps) {
   const [sentences, setSentences] = useState<string[]>([]);
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isStarted, setIsStarted] = useState(false);
@@ -62,18 +64,22 @@ export default function Transcription() {
 
     if (isStarted) {
       recognition?.stop();
-      setIsStarted(false);
+      setIsStarted(!isStarted);
     } else {
       try {
-        recognition.start();
-        setIsStarted(true);
+        setInterimTranscript("");
+        recognition?.start();
+        setIsStarted(!isStarted);
       } catch (error) {
         console.error("SpeechRecognition start error:", error);
       }
     }
-
     setIsCooldown(true);
     setTimeout(() => setIsCooldown(false), 1000);
+  };
+
+  const handleSentenceClick = (sentence: string) => {
+    addFactCheck(sentence);
   };
 
   useEffect(() => {
@@ -114,11 +120,14 @@ export default function Transcription() {
     return () => {
       recognition?.stop();
     };
-  }, [isStarted]);
+  }, []);
 
   useEffect(() => {
     if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [sentences, interimTranscript]);
 
@@ -139,7 +148,7 @@ export default function Transcription() {
           <span
             key={index}
             className={styles.sentence}
-            onClick={() => console.log("Clicked:", sentence)}
+            onClick={() => handleSentenceClick(sentence)}
           >
             {sentence}{" "}
           </span>
