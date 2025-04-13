@@ -60,7 +60,7 @@
 }
 
 .mainNavLink:hover {
-  background: linear-gradient(45deg, #0d5179, #0f8dd1, #17a374, #0f595e);
+  background: linear-gradient(45deg, #000000, #062f4f, #813772, #b82601);
   box-shadow: 0 0px 10px rgba(15, 141, 209, 0.63);
   background-size: 400% 400%;
   animation: gradientLoop 10s infinite;

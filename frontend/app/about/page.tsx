@@ -11,7 +11,7 @@ export default function BlankPage() {
   }, []);
 
   const routes = [
-    { name: "Home", path: "/Home" },
+    { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     {
       name: "Github",
@@ -54,7 +54,7 @@ export default function BlankPage() {
           <h3 className={styles.featureTitle}>Speech-to-Text</h3>
           <p>
             Convert spoken words into text dynamically with advanced speech
-            recognition
+            recognition.
           </p>
         </div>
         <div className={styles.feature}>
@@ -63,8 +63,8 @@ export default function BlankPage() {
             Realtime Conversational Analysis
           </h3>
           <p>
-            Verify claims using AI-powered tools and trusted sources. All
-            analysis of claims provde sourcing to allow for transparency.
+            Verify claims using AI-powered tools and trusted sources. All 
+            sources are linked for transparency.
           </p>
         </div>
       </div>

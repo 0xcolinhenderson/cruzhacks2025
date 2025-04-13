@@ -44,7 +44,7 @@ body {
 
 .subtitle {
   font-size: 20px;
-  font-weight: 200;
+  font-weight: 600;
   color: #ffffff;
   margin-bottom: 30px;
 }
@@ -82,8 +82,8 @@ body {
   justify-content: center;
   display: flex;
   flex-direction: column;
-  height: 500px;
-  width: 400px;
+  height: 55vh;
+  width: 28vw;
   background-color: #1a1a1ae1;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -94,8 +94,8 @@ body {
 }
 
 .feature img {
-  width: 300px;
-  height: 300px;
+  width: 20vw;
+  height: 30vh;
   object-fit: cover;
   border-radius: 20px;
   border: 1px solid #e7e7e75f;
@@ -122,6 +122,6 @@ body {
 }
 
 .feature:hover h3 {
-  color: #07afec;
+  color: #ffffff;
   transform: scale(1.1);
 }

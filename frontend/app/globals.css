@@ -21,8 +21,12 @@ body {
   object-fit: cover;
   width: 100%;
   height: 100%;
-  --gradient-color-1: #043d5d;
+  /* --gradient-color-1: #043d5d;
   --gradient-color-2: #032e46;
   --gradient-color-3: #23b684;
-  --gradient-color-4: #0f595e;
+  --gradient-color-4: #0f595e; */
+  --gradient-color-1: #000000; 
+  --gradient-color-2: #062f4f; 
+  --gradient-color-3: #813772;  
+  --gradient-color-4: #b82601;
 }

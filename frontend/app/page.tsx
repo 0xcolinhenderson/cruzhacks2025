@@ -1,35 +1,17 @@
 "use client";
 
 import { Gradient } from "whatamesh";
-import { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import Transcription from "./components/Transcription";
-import FactCheckBox from "./components/FactCheckBox";
+import { useEffect } from "react";
 import styles from "./page.module.css";
-
-interface FactCheckData {
-  claim: string;
-  isFact: boolean;
-  description: string;
-  sources: string[];
-  timestamp: string;
-}
-
-export default function Home() {
-  const [factChecks, setFactChecks] = useState<FactCheckData[]>([]);
-  const [autoMode, setAutoMode] = useState(false);
-
-  const handleAutoModeChange = (isAuto: boolean) => {
-    setAutoMode(isAuto);
-  };
-
+import Navbar from "./components/Navbar";
+export default function BlankPage() {
   useEffect(() => {
     const gradient = new Gradient();
     gradient.initGradient("#gradient-canvas");
   }, []);
 
   const routes = [
-    { name: "Home", path: "/home" },
+    { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     {
       name: "Github",
@@ -39,6 +21,7 @@ export default function Home() {
     { name: "Create Session", path: "/session", isMain: true },
   ];
 
+<<<<<<< Updated upstream
   const addFactCheck = ({
     claim,
     isFact,
@@ -58,19 +41,55 @@ export default function Home() {
     ]);
   };
 
+=======
+>>>>>>> Stashed changes
   return (
     <div className={styles.page}>
       <canvas id="gradient-canvas" className={styles.canvas}></canvas>
       <Navbar routes={routes} />
       <main className={styles.main}>
         <div className={styles.contentContainer}>
-          <FactCheckBox
-            factChecks={factChecks}
-            onAutoModeChange={handleAutoModeChange}
-          />
-          <Transcription addFactCheck={addFactCheck} autoMode={autoMode} />
+          <div className={styles.titleContainer}>
+            <h1 className={styles.title}>
+              Realtime Conversational Fact-Checking
+            </h1>
+            <h2 className={styles.subtitle}>
+              Generate realtime analysis & transcription of conversations, to
+              combat misinformation. Created for UCSC CruzHacks 2025.
+            </h2>
+          </div>
         </div>
       </main>
+      <div className={styles.mainContent}>
+        <div className={styles.feature}>
+          <img src="/analysis.JPG" alt="Analysis" />
+          <h3 className={styles.featureTitle}>
+            Realtime Conversational Analysis
+          </h3>
+          <p>
+            Analyze conversations in real-time to detect misinformation and
+            ensure factual accuracy.
+          </p>
+        </div>
+        <div className={styles.feature}>
+          <img src="/stt.JPG" alt="STT" />
+          <h3 className={styles.featureTitle}>Speech-to-Text</h3>
+          <p>
+            Convert spoken words into text dynamically with advanced speech
+            recognition
+          </p>
+        </div>
+        <div className={styles.feature}>
+          <img src="/other.JPG" alt="Verify Claims" />
+          <h3 className={styles.featureTitle}>
+            Realtime Conversational Analysis
+          </h3>
+          <p>
+            Verify claims using AI-powered tools and trusted sources. All
+            analysis of claims provde sourcing to allow for transparency.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
