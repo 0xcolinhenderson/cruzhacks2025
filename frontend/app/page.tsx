@@ -16,7 +16,7 @@ export default function Home() {
   const textStream1 = "Test message. Joe Biden.";
 
   const routes = [
-    { name: "Home", path: "/" },
+    { name: "Home", path: "/home" },
     { name: "About", path: "/about" },
     {
       name: "Github",
@@ -33,7 +33,7 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.contentContainer}>
           <FactCheckBox textStream={textStream1} />
-          <Transcription textStream={textStream1} />
+          <Transcription />
         </div>
       </main>
     </div>

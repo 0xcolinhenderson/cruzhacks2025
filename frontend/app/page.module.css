@@ -1,5 +1,5 @@
-/* Prevent overall page scrolling*/
-html, body {
+html,
+body {
   overflow: hidden;
 }
 
@@ -34,3 +34,94 @@ html, body {
   gap: 10px;
 }
 
+.title {
+  margin-top: 5vh;
+  font-size: 60px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 200;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+.titleContainer {
+  text-align: center;
+}
+
+.logo {
+  font-family: var(--font-inter);
+  font-weight: 800;
+  background: linear-gradient(45deg, #ffffff, #ffffff, #ffffff, #95f3fa);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientLoop 10s infinite;
+  display: inline-block;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.mainContent {
+  margin-top: 50px;
+  justify-content: center;
+  gap: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.feature {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  width: 400px;
+  background-color: #1a1a1ae1;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 1px solid #e7e7e75f;
+}
+
+.feature:hover {
+  background-color: #1f1f1fe1;
+  transform: scale(1.05);
+}
+
+.feature h3 {
+  font-size: 20px;
+  font-weight: 300;
+  color: #ffffff;
+  margin: 20px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.feature p {
+  font-size: 16px;
+  font-weight: 200;
+  color: #cccccc;
+  margin: 0 20px 20px;
+}
+
+.feature:hover h3 {
+  color: #07afec;
+  transform: scale(1.1);
+}
