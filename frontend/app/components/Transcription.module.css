@@ -19,13 +19,23 @@
   display: inline;
 }
 
+.sentence.disabled {
+  cursor: not-allowed;
+  color: #ffffff;
+}
+
+.sentence.disabled:hover {
+  background-color: #830d0d;
+  color: #ffffff;
+}
+
 .sentence:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: #00aaff;
 }
 
 .sentence.loading {
-  color: yellow;
+  background-color: rgba(11, 110, 167, 0.456);
 }
 
 .paragraphContainer {

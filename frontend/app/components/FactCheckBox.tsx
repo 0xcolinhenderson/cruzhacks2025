@@ -13,17 +13,25 @@ interface FactCheckData {
 
 interface FactCheckProps {
   factChecks: FactCheckData[];
+  onAutoModeChange: (isAuto: boolean) => void;
 }
 
-export default function FactCheckBox({ factChecks }: FactCheckProps) {
+export default function FactCheckBox({
+  factChecks,
+  onAutoModeChange,
+}: FactCheckProps) {
   const [isAutoMode, setIsAutoMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleToggleMode = () => {
+    console.log("Toggle mode clicked:", isAutoMode);
     setIsAutoMode((prev) => !prev);
-    // Auto mode functionality could be moved to the parent component if needed
   };
+
+  useEffect(() => {
+    onAutoModeChange(isAutoMode);
+  }, [isAutoMode, onAutoModeChange]);
 
   useEffect(() => {
     if (containerRef.current) {

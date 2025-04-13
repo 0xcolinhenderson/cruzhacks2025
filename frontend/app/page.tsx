@@ -17,6 +17,11 @@ interface FactCheckData {
 
 export default function Home() {
   const [factChecks, setFactChecks] = useState<FactCheckData[]>([]);
+  const [autoMode, setAutoMode] = useState(false);
+
+  const handleAutoModeChange = (isAuto: boolean) => {
+    setAutoMode(isAuto);
+  };
 
   useEffect(() => {
     const gradient = new Gradient();
@@ -56,8 +61,11 @@ export default function Home() {
       <Navbar routes={routes} />
       <main className={styles.main}>
         <div className={styles.contentContainer}>
-          <FactCheckBox factChecks={factChecks} />
-          <Transcription addFactCheck={addFactCheck} />
+          <FactCheckBox
+            factChecks={factChecks}
+            onAutoModeChange={handleAutoModeChange}
+          />
+          <Transcription addFactCheck={addFactCheck} autoMode={autoMode} />
         </div>
       </main>
     </div>

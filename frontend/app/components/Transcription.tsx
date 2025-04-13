@@ -54,9 +54,13 @@ function formatSentence(sentence: string): string {
 
 interface TranscriptionProps {
   addFactCheck: (claim: string) => void;
+  autoMode: boolean;
 }
 
-export default function Transcription({ addFactCheck }: TranscriptionProps) {
+export default function Transcription({
+  addFactCheck,
+  autoMode,
+}: TranscriptionProps) {
   const [sentences, setSentences] = useState<string[]>([]);
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isStarted, setIsStarted] = useState(false);
@@ -64,13 +68,24 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
   const [loadingSentences, setLoadingSentences] = useState<Set<number>>(
     new Set()
   );
+  const [disabledSentences, setDisabledSentences] = useState<Set<number>>(
+    new Set()
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const isDisabled = (index: number) => {
+    return disabledSentences.has(index);
+  };
 
   const addSentence = (sentence: string) => {
     const formatted = formatSentence(sentence);
     if (formatted) {
-      setSentences((prev) => [...prev, formatted]);
+      setSentences((prev) => {
+        const updatedSentences = [...prev, formatted];
+        handleSentenceFinalized(formatted, updatedSentences);
+        return updatedSentences;
+      });
     }
   };
 
@@ -95,6 +110,10 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
 
   const handleSentenceClick = async (sentence: string, index: number) => {
     setLoadingSentences((prev) => new Set(prev).add(index));
+    if (disabledSentences.has(index)) {
+      console.log("Sentence is disabled:", sentence);
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:5000/detect_claim", {
@@ -117,8 +136,27 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
       setLoadingSentences((prev) => {
         const newSet = new Set(prev);
         newSet.delete(index);
+        disabledSentences.add(index);
         return newSet;
       });
+    }
+  };
+
+  const handleSentenceFinalized = (
+    sentence: string,
+    updatedSentences: string[]
+  ) => {
+    console.log("Finalized sentence:", sentence);
+    console.log("Sentences array:", updatedSentences);
+    const index = updatedSentences.findIndex((s) => s === sentence);
+    console.log("Index of sentence:", index);
+    console.log("Auto mode:", autoMode);
+
+    if (index !== -1 && autoMode) {
+      console.log("Auto mode is on, processing sentence:", sentence);
+      handleSentenceClick(sentence, index);
+    } else {
+      console.log("Auto mode is off, not processing sentence:", sentence);
     }
   };
 
@@ -160,7 +198,7 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
     return () => {
       recognition?.stop();
     };
-  }, []);
+  }, [autoMode]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -188,9 +226,15 @@ export default function Transcription({ addFactCheck }: TranscriptionProps) {
           <span
             key={index}
             className={`${styles.sentence} ${
-              loadingSentences.has(index) ? styles.loading : ""
+              disabledSentences.has(index)
+                ? styles.disabled
+                : loadingSentences.has(index)
+                ? styles.loading
+                : ""
             }`}
-            onClick={() => handleSentenceClick(sentence, index)}
+            onClick={() => {
+              isDisabled(index) ? void 0 : handleSentenceClick(sentence, index);
+            }}
           >
             {sentence}{" "}
           </span>
