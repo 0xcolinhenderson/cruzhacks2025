@@ -11,6 +11,19 @@
   display: flex;
 }
 
+.timestamp {
+  display: block;         
+  background-color: #272727;
+  color: #a9a8a8;            
+  border-radius: 6px;        
+  margin: 10px auto;
+  padding: 2px 12px;         
+  font-size: .7rem;           
+  font-weight: 500;      
+  width: 72%;    
+}
+
+
 .sentence {
   cursor: pointer;
   padding: 1px 2px 1px 2px;
@@ -30,8 +43,8 @@
 }
 
 .sentence:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #00aaff;
+  background-color: rgba(47, 170, 28, 0.7);
+  color:#ffffff;
 }
 
 .sentence.loading {

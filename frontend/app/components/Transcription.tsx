@@ -65,18 +65,13 @@ export default function Transcription({
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isStarted, setIsStarted] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
-  const [loadingSentences, setLoadingSentences] = useState<Set<number>>(
-    new Set()
-  );
-  const [disabledSentences, setDisabledSentences] = useState<Set<number>>(
-    new Set()
-  );
+  const [loadingSentences, setLoadingSentences] = useState<Set<number>>(new Set());
+  const [disabledSentences, setDisabledSentences] = useState<Set<number>>(new Set());
+  const [recordingStartTime, setRecordingStartTime] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const isDisabled = (index: number) => {
-    return disabledSentences.has(index);
-  };
+  const isDisabled = (index: number) => disabledSentences.has(index);
 
   const addSentence = (sentence: string) => {
     const formatted = formatSentence(sentence);
@@ -93,16 +88,32 @@ export default function Transcription({
     if (isCooldown) return;
 
     if (isStarted) {
-      // add box with timestamp "Recording started h:mm:ss AM/PM"
+      const stopTime = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: true,
+      });
+      const startTime = recordingStartTime || stopTime;
+      setSentences((prev) => [
+        ...prev,
+        `Recorded from ${startTime} to ${stopTime}`,
+      ]);
       recognition?.stop();
-      setIsStarted(!isStarted);
+      setIsStarted(false);
+      setRecordingStartTime(null);
     } else {
+      const nowTime = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: true,
+      });
+      setRecordingStartTime(nowTime);
+      setInterimTranscript("");
       try {
-        setInterimTranscript("");
-
-        // add box with timestamp "Recording started h:mm:ss AM/PM"
         recognition?.start();
-        setIsStarted(!isStarted);
+        setIsStarted(true);
       } catch (error) {
         console.error("SpeechRecognition start error:", error);
       }
@@ -130,7 +141,6 @@ export default function Transcription({
         console.error("Failed to process sentence:", response.statusText);
         return;
       }
-
       const data = await response.json();
       addFactCheck(sentence);
     } catch (error) {
@@ -198,6 +208,7 @@ export default function Transcription({
       }
     };
 
+    //WATCH OUT NEVER return isStarted
     return () => {
       recognition?.stop();
     };
@@ -225,23 +236,34 @@ export default function Transcription({
       <div className={styles.divider}></div>
 
       <div className={styles.paragraphContainer} ref={containerRef}>
-        {sentences.map((sentence, index) => (
-          <span
-            key={index}
-            className={`${styles.sentence} ${
-              disabledSentences.has(index)
-                ? styles.disabled
-                : loadingSentences.has(index)
-                ? styles.loading
-                : ""
-            }`}
-            onClick={() => {
-              isDisabled(index) ? void 0 : handleSentenceClick(sentence, index);
-            }}
-          >
-            {sentence}{" "}
-          </span>
-        ))}
+        {sentences.map((sentence, index) => {
+          const isRecordedTimestamp = sentence.startsWith("Recorded from");
+          if (isRecordedTimestamp) {
+            return (
+              <div key={index} className={styles.timestamp}>
+                {sentence}
+              </div>
+            );
+          }
+          return (
+            <span
+              key={index}
+              className={`${styles.sentence} ${
+                disabledSentences.has(index)
+                  ? styles.disabled
+                  : loadingSentences.has(index)
+                  ? styles.loading
+                  : ""
+              }`}
+              onClick={() => {
+                if (isDisabled(index)) return;
+                handleSentenceClick(sentence, index);
+              }}
+            >
+              {sentence}{" "}
+            </span>
+          );
+        })}
         {interimTranscript && (
           <span className={styles.interim}>{interimTranscript}</span>
         )}
