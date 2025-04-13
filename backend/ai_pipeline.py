@@ -8,7 +8,6 @@ from langchain.chains import RetrievalQA
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-import csv
 from vector import retriever
 import shutil
 import time
@@ -62,7 +61,7 @@ def is_verifiable_claim_gemini(client, claim):
     *   **Factual:** Can be proven true or false with objective evidence (facts, sources).
         *   *Important:* Your job is NOT to check if it's *true*, only if it *can* be checked. Even a false claim like "Blue is not a color" is **Factual**.
     *   **Opinion:** Expresses personal belief, feeling, judgment, or preference. Cannot be objectively proven true or false.
-    *   **Statement:** Makes no clear claim to be verified or judged (often incomplete or just descriptive).
+    *   **Statement:** Makes no clear claim to be verified or judged (often incomplete or just descriptive). Any questions are counted as statements.
 
     **Instructions:**
     1.  Use simple, standard English understanding.
@@ -142,17 +141,6 @@ def get_wikipedia_articles(urls):
             ))
     return docs
 
-def save_wikipedia_to_csv(wikidata, filename="wiki_results.csv"):
-    with open(filename, mode="w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Title", "Summary"])
-
-    with open(filename, mode="a", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Title", "Content"])
-        for title, content in wikidata:
-            writer.writerow([title, content])
-    print(f"Saved Wikipedia data to {filename}")
 
 def verify_claim_with_wikipedia(model, prompt, claim, retriever):
     qa_chain = RetrievalQA.from_chain_type(
@@ -225,41 +213,37 @@ def verify_claim(my_claim):
 
     wikidata = get_wikipedia_articles(search_urls)
 
-    # save_wikipedia_to_csv([(doc.metadata["title"], doc.page_content) for doc in wikidata])
-
+    print("Time to retreive!")
     context, sources = retriever(my_claim, documents=wikidata)
-    print("context      context")
     print(context)
-    print("endcontext      context")
+    print(sources)
 
-    model = OllamaLLM(model="llama3.2")
-    template = """
+    prompt = f"""
     You are a fact-checking assistant.
 
     Use ONLY the following Wikipedia sources to verify the claim.
     Respond with:
-    - Verdict: [True / False / Unverifiable]
-    - Reasoning: [Why the claim is or is not supported. Include a relevant quote from the sources. 1-2 sentences max.]
+    
+    Verdict: [True / False / Unverifiable]
+    Reasoning: [Why the claim is categorically true or false based off the evidence from the sources. Include a relevant quote from the sources. 1-2 sentences max.]
 
     If the context does not contain enough information to verify the claim, respond with "Unverifiable".
 
     Claim:
-    {claim}
+    {my_claim}
 
     Sources:
     {context}
     """
-    prompt = ChatPromptTemplate.from_template(template)
-    chain = prompt | model
-    claim_verification = chain.invoke({"context": context, "claim": my_claim})
+
+    print("Sending prompt to Gemini model...")
+    response = client.models.generate_content(
+        model="gemini-2.0-flash", 
+        contents=prompt
+    )
+
     print("\nClaim Verification Result:")
-    output = parse_final_output(claim_verification, sources)
-
+    output = parse_final_output(response.text, sources)
     print(output)
+
     return output
-
-    # todo: json
-    # json claim:string, verdict:bool, reasoning:string (preferably with quote, cited from sources), sources:[string of wiki articles]
-
-if __name__ == "__main__":
-    verify_claim("joe biden is a woman")

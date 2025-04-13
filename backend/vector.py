@@ -3,18 +3,16 @@ from langchain_ollama import OllamaEmbeddings
 import os
 import shutil
 
-def retriever(query, documents, db_location="./wiki_langchain_db"):
+def retriever(query, documents):
     """
     Embed and store documents in a Chroma vector store, then retrieve relevant chunks.
     """
-    embeddings = OllamaEmbeddings(model="mxbai-embed-large")
-
-    if os.path.exists(db_location):
-        shutil.rmtree(db_location)
+    
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
     vector_store = Chroma(
         collection_name="wikipedia_articles",
-        persist_directory=db_location,
+        persist_directory=None,
         embedding_function=embeddings
     )
 

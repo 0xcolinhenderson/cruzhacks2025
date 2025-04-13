@@ -21,31 +21,6 @@ export default function BlankPage() {
     { name: "Create Session", path: "/session", isMain: true },
   ];
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  const addFactCheck = ({
-    claim,
-    isFact,
-    description,
-    sources,
-    timestamp,
-  }: {
-    claim: string;
-    isFact: boolean;
-    description: string;
-    sources: string[];
-    timestamp: string;
-  }) => {
-    setFactChecks((prev) => [
-      ...prev,
-      { claim, isFact, description, sources, timestamp },
-    ]);
-  };
-
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
   return (
     <div className={styles.page}>
       <canvas id="gradient-canvas" className={styles.canvas}></canvas>

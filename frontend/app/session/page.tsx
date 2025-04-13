@@ -39,19 +39,22 @@ export default function Home() {
     { name: "Create Session", path: "/session", isMain: true },
   ];
 
-  const addFactCheck = (claim: string) => {
-    const currentTime = new Date().toLocaleTimeString();
-    const isFact = Math.random() > 0.5;
-    const description = isFact
-      ? "This claim is supported by evidence."
-      : "This claim is not supported by evidence.";
-    const sources = isFact
-      ? ["Source 1", "Source 2", "Source 3"]
-      : ["No reliable sources found."];
-
+  const addFactCheck = ({
+    claim,
+    isFact,
+    description,
+    sources,
+    timestamp,
+  }: {
+    claim: string;
+    isFact: boolean;
+    description: string;
+    sources: string[];
+    timestamp: string;
+  }) => {
     setFactChecks((prev) => [
       ...prev,
-      { claim, isFact, description, sources, timestamp: currentTime },
+      { claim, isFact, description, sources, timestamp },
     ]);
   };
 
