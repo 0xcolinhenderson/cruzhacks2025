@@ -84,15 +84,14 @@ body {
   flex-direction: column;
   height: 55vh;
   width: 28vw;
-  background-color: #1a1a1ae1;
+  background: linear-gradient(180deg, #000000, #2c2c2c69);
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, background-color 0.3s ease, border 0.3s ease;
-  border: 3px solid transparent;
   position: relative;
   overflow: hidden;
 }
-
+  
 .feature img {
   width: 20vw;
   height: 30vh;

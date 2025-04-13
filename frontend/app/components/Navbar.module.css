@@ -10,6 +10,19 @@
   z-index: 1;
 }
 
+.navbarContent {
+  display: flex;
+}
+
+.topRightText {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 20px;
+  color: #f6f6f6;
+  font-weight: 500;
+}
+
 .navList {
   display: flex;
   gap: 20px;
