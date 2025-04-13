@@ -8,9 +8,11 @@ from langchain_core.output_parsers import StrOutputParser
 #%pip install -qU langchain_community wikipedia
 from langchain_community.retrievers import WikipediaRetriever
 
+from sentence_transformers import SentenceTransformer
+
 
 MAX_CONTEXT_LENGTH = 20
-OLLAMA_MODEL = "llama3.2"
+OLLAMA_MODEL = "gemma3:4b"
 DEBUG=True
 
 model = OllamaLLM(model=OLLAMA_MODEL)
@@ -42,8 +44,13 @@ Claim: "Dog bark" -> Statement
 "{claim}"
 """)
 
-wikipedia_template = ChatPromptTemplate.from_template("""
-**Task:** Evaluate the Claim based *only* on the Evidence.
+wikipedia_template = ChatPromptTemplate.from_template(""" **Task:** Evaluate the Claim based *only* on the Evidence.
+**Claim:** "{claim}"
+
+tell me if the claim is true or false
+""")
+
+wikipedia_template2 = ChatPromptTemplate.from_template(""" **Task:** Evaluate the Claim based *only* on the Evidence.
 **Output:** Respond with *exactly* one word: "True", "False", or "Unsure".
 
 **Definitions:**
@@ -63,8 +70,9 @@ wikipedia_template = ChatPromptTemplate.from_template("""
 
 **Claim:** "{claim}"
 
-**Output (ONLY one word):**
+**Output:** Respond with *exactly* one word: "True", "False", or "Unsure".
 """)
+
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
@@ -169,3 +177,23 @@ if __name__ == '__main__':
     print(is_potential_claim(test))
 
     handle_text(test,[])
+
+
+# 1. Load a pretrained Sentence Transformer model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# The sentences to encode
+sentences = [
+    "The weather is lovely today.",
+    "It's so sunny outside!",
+    "He drove to the stadium.",
+]
+
+# 2. Calculate embeddings by calling model.encode()
+embeddings = model.encode(sentences)
+print(embeddings.shape)
+# [3, 384]
+
+# 3. Calculate the embedding similarities
+similarities = model.similarity(embeddings, embeddings)
+print(similarities)

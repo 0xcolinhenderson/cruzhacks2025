@@ -23,5 +23,11 @@ def retriever(query, documents, db_location="./wiki_langchain_db"):
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
     retrieved_docs = retriever.invoke(query)
 
+
+    source_titles = set()
+    for doc in retrieved_docs:
+        url = doc.metadata.get("source", "Unknown")
+        source_titles.add(url)
+
     context = "\n".join([doc.page_content for doc in retrieved_docs])
-    return context
+    return context, list(source_titles)
