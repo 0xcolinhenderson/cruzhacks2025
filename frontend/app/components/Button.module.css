@@ -1,0 +1,56 @@
+.button {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background-size: 200%;
+  outline: none;
+}
+
+.start {
+  background: linear-gradient(45deg, #21973d, #030e06);
+  color: white;
+  background-size: 400%;
+  transition: background-position 0.3s ease-in-out, transform 0.2s;
+}
+
+.start:hover {
+  background: linear-gradient(45deg, #0d791b, #3cd10f, #17a32c, #2f5e0f);
+  box-shadow: 0 0px 10px rgba(51, 209, 15, 0.63);
+  background-size: 400% 400%;
+  animation: gradientLoop 10s infinite;
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+.stop {
+  background: linear-gradient(45deg, #a71d2a, #721c24);
+  color: white;
+  background-size: 400%;
+  transition: background-position 0.3s ease-in-out, transform 0.2s;
+}
+
+.stop:hover {
+  background: linear-gradient(45deg, #790d0d, #d10f0f, #a31719, #831d46);
+  box-shadow: 0 0px 10px rgba(209, 15, 15, 0.63);
+  background-size: 400% 400%;
+  animation: gradientLoop 10s infinite;
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+@keyframes gradientLoop {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -1,0 +1,36 @@
+/* Prevent overall page scrolling*/
+html, body {
+  overflow: hidden;
+}
+
+.page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.main {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 50px;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: row;
+  margin-top: 50px;
+  gap: 10px;
+}
+
