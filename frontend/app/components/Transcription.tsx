@@ -53,7 +53,13 @@ function formatSentence(sentence: string): string {
 }
 
 interface TranscriptionProps {
-  addFactCheck: (claim: string) => void;
+  addFactCheck: (data: {
+    claim: string;
+    isFact: boolean;
+    description: string;
+    sources: string[];
+    timestamp: string;
+  }) => void;
   autoMode: boolean;
 }
 
@@ -130,19 +136,54 @@ export default function Transcription({
     }
 
     try {
-      const response = await fetch("http://localhost:5000/detect_claim", {
+      const queueResponse = await fetch("http://localhost:5000/queue_claim", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ sentence: sentence }),
+        body: JSON.stringify({ claim: sentence }),
       });
-      if (!response.ok) {
-        console.error("Failed to process sentence:", response.statusText);
+      if (!queueResponse.ok) {
+        console.error("Failed to queue claim:", queueResponse.statusText);
         return;
       }
-      const data = await response.json();
-      addFactCheck(sentence);
+
+    const { result: taskId } = await queueResponse.json();
+    console.log(`Task submitted successfully. Task ID: ${taskId}`);
+
+    let taskStatus = "pending";
+    let taskResult = null;
+
+    while (taskStatus === "pending" || taskStatus === "running") {
+      const pollResponse = await fetch(`http://localhost:5000/poll/${taskId}`);
+      if (!pollResponse.ok) {
+        console.error("Failed to poll task:", pollResponse.statusText);
+        break;
+      }
+
+      const pollData = await pollResponse.json();
+      taskStatus = pollData.status;
+      taskResult = pollData.result;
+
+      console.log(`Task Status: ${taskStatus}`);
+      if (taskStatus === "done" || taskStatus === "error") {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+    if (taskStatus === "done" && taskResult) {
+      const { verdict, reasoning, sources } = JSON.parse(taskResult);
+      addFactCheck({
+        claim: sentence,
+        isFact: verdict,
+        description: reasoning,
+        sources,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+    } else if (taskStatus === "error") {
+      console.error("Task Error:", taskResult);
+    }
     } catch (error) {
       console.error("Error processing sentence:", error);
     } finally {

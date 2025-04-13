@@ -102,10 +102,14 @@ export default function FactCheckBox({
               {factCheck.description}
             </p>
             <div className={styles.factCheckSources}>
-              <strong>Sources:</strong>
+            <strong>Sources:</strong>
               <ul>
                 {factCheck.sources.map((source, sourceIndex) => (
-                  <li key={sourceIndex}>{source}</li>
+                  <li key={sourceIndex}>
+                    <a href={source} className={styles.source} target="_blank" rel="noopener noreferrer">
+                      {source}
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
