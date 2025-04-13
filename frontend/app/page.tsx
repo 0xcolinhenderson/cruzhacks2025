@@ -60,7 +60,7 @@ export default function BlankPage() {
         <div className={styles.feature}>
           <img src="/other.JPG" alt="Verify Claims" />
           <h3 className={styles.featureTitle}>
-            Realtime Conversational Analysis
+            Transparent AI & Sources
           </h3>
           <p>
             Verify claims using AI-powered tools and trusted sources. Sources are linked for transparency.
