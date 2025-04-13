@@ -253,7 +253,10 @@ def verify_claim(my_claim):
     chain = prompt | model
     claim_verification = chain.invoke({"context": context, "claim": my_claim})
     print("\nClaim Verification Result:")
-    print(parse_final_output(claim_verification, sources))
+    output = parse_final_output(claim_verification, sources)
+
+    print(output)
+    return output
 
     # todo: json
     # json claim:string, verdict:bool, reasoning:string (preferably with quote, cited from sources), sources:[string of wiki articles]

@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from detect_claim import is_potential_claim
+from flask_cors import CORS
 import threading
 import uuid
 import time
@@ -7,6 +7,7 @@ from queue import Queue
 from ai_pipeline import verify_claim
 
 app = Flask(__name__)
+CORS(app)
 
 task_queue = Queue()
 task_status = {}
@@ -34,12 +35,9 @@ threading.Thread(target=worker, daemon=True).start()
 
 @app.route('/queue_claim', methods=['POST'])
 def queue_claim():
-    claim = request.args.get("claim")
+    claim = request.json.get("claim")
     if not claim or claim == "":
         return jsonify({"error": "No sentence provided"}), 400
-
-    if not is_potential_claim(claim):
-        return jsonify({"result": "not claim"})
 
     task_id = str(uuid.uuid4())
     task_status[task_id] = {"status": "pending", "result": None}
