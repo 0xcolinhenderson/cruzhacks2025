@@ -1,6 +1,6 @@
 # Verity - Realtime Fact-Checking & Conversational Analysis
 
-Verity is a powerful web application designed to streamline the job application process. Verity combats misinformation through realtime retreival of sourced data, which is analyzed and applied to specific claims made during a conversation. The platform encourages research and sourcing claims, improving conversation productiveness and establishing baseline truths to arguments.
+Verity combats misinformation through realtime retreival of sourced data, which is analyzed and applied to specific claims made during a conversation. The platform encourages research and sourcing claims, improving conversation productiveness and establishing baseline truths to arguments.
 
 With Verity, users can get a realtime transcription of their conversation, analyze specific claims made, and get personalized feedback regardinging the validity of claims.
 
